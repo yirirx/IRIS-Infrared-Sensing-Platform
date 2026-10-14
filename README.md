@@ -1,56 +1,91 @@
 # IRIS — Infrared Sensing & Signal Processing Platform
 
-> An open engineering project exploring modulated infrared sensing, noisy-signal detection, and a staged path from reproducible simulation to a low-cost physical prototype.
+![Status](https://img.shields.io/badge/status-simulation%20prototype-blue) ![Python](https://img.shields.io/badge/Python-3.10%2B-3776AB) ![License](https://img.shields.io/badge/license-MIT-green)
 
-![Status](https://img.shields.io/badge/status-early%20simulation-blue) ![Python](https://img.shields.io/badge/Python-3.10%2B-3776AB) ![License](https://img.shields.io/badge/license-MIT-green)
+**IRIS** is an open engineering project exploring modulated infrared (IR) signals, noise, and digital detection. The goal is to build a traceable path from repeatable signal-processing experiments to a carefully documented low-power physical prototype.
 
-**This is an original, staged project.** Milestone 0.1 contains a software simulation. No physical prototype, measured range, or hardware performance is claimed yet.
+> **Current scope:** software simulation only. No physical prototype, measured detection range, calibrated optical sensitivity, or hardware performance is claimed.
 
-## Goals
-- Generate a modulated carrier burst and simulate attenuation/noise.
-- Compare energy and matched-filter detection.
-- Produce repeatable plots and CSV metrics.
-- Document requirements, design decisions, testing, and a responsible hardware path.
+## Current simulation result
+
+![Simulated detection rate versus SNR](5_Simulations/results/detection_sweep.svg)
+
+The chart summarizes the committed CSV for nine SNR settings, with 100 simulated trials per point. The matched-filter curve is high for this particular reference waveform and threshold setup; this is not evidence of real-world range or performance. Threshold calibration, processing gain, and noise assumptions are key topics for the next experiment iteration.
+
+Raw values: [metrics.csv](5_Simulations/results/metrics.csv)
+
+## What it does today
+- Generates a repeatable on/off-keyed sinusoidal burst.
+- Applies scalar gain and additive Gaussian noise.
+- Compares energy detection with matched-filter scoring.
+- Runs Monte Carlo trials over a signal-to-noise ratio (SNR) sweep.
+- Exports metrics to CSV and plots.
+- Includes unit tests, architecture notes, requirements, limitations, and a staged roadmap.
 
 ## Repository map
-- `1_Project_Description/` — requirements, roadmap, design decisions
-- `2_System_Architecture/` — block diagram and signal flow
-- `3_Sensor_and_Power/` — sensor evaluation and power-budget template
-- `4_Schematics_and_Hardware/` — hardware status and preliminary BOM
-- `5_Simulations/` — experiment plan and generated results
-- `6_Application_Notes/` — detection theory and limitations
-- `7_Component_Datasheets/` — component-document register
-- `8_Utils/` — evidence and plotting conventions
-- `9_Firmware_and_Software/` — Python simulation package
-- `docs/`, `tests/`, `.github/workflows/` — reports, unit tests, CI
+```text
+1_Project_Description/       requirements, roadmap, design decisions
+2_System_Architecture/       architecture diagram and signal flow
+3_Sensor_and_Power/          sensor evaluation and power-budget template
+4_Schematics_and_Hardware/   hardware status and preliminary BOM
+5_Simulations/               experiment plan and results
+6_Application_Notes/         detection theory and limitations
+7_Component_Datasheets/      component-document register
+8_Utils/                     evidence and plotting conventions
+9_Firmware_and_Software/     Python simulation package
+docs/                        test plan, results, changelog
+tests/                       automated unit tests
+.github/workflows/           CI test workflow
+```
 
 ## Quick start
 Requires Python 3.10+.
+
 ```bash
 python -m venv .venv
 # Windows: .venv\Scripts\activate
 # macOS/Linux: source .venv/bin/activate
 python -m pip install -e ".[dev]"
-python -m iris_sim --output 5_Simulations/results
 pytest
+python -m iris_sim --output 5_Simulations/results --trials 100
 ```
 
-The simulation creates `waveform.png`, `detection_sweep.png`, and `metrics.csv` in the selected output directory.
+The simulation writes `waveform.png`, `detection_sweep.png`, and `metrics.csv` to the output directory.
 
-## First simulation
-The model generates an on/off-keyed sinusoidal burst, applies scalar gain and additive Gaussian noise, then evaluates an energy score and a matched-filter score. It sweeps SNR and estimates detection and false-alarm rates using repeatable random trials.
+## System architecture
 
-This is **not** a calibrated optical propagation model. It does not yet include lens geometry, photodiode responsivity, analogue-front-end bandwidth, saturation, ADC quantization, or measured ambient-light interference. Simulated results must not be presented as hardware measurements or detection range.
+```mermaid
+flowchart LR
+ A[Experiment parameters] --> B[Modulated IR burst]
+ B --> C[Gain + noise model]
+ C --> D[Received samples]
+ D --> E[Energy detector]
+ D --> F[Matched-filter detector]
+ E --> G[Metrics and plots]
+ F --> G
+ G --> H[CSV + report]
+```
 
-## Engineering principles
-1. Reproducible experiments and documented parameters.
-2. Clear separation of simulation, bench tests, and field measurements.
-3. Traceability from requirements to tests.
-4. Hardware selection only after requirements and datasheets are reviewed.
-5. Original implementation; the organization is inspired by open engineering repositories, not copied from them.
+## Engineering roadmap
+1. **Simulation foundation:** implemented; six local unit tests passed.
+2. **Stronger experiments:** improve threshold calibration, confidence intervals, sensitivity analysis, and reporting.
+3. **Sensor and circuit selection:** compare receiver architectures using actual datasheets.
+4. **Bench prototype:** build a safe, low-power setup and compare captured samples with simulation.
+5. **Demonstration:** publish repeatable measurements only after documenting the setup and uncertainty.
 
-## Safety
-IR sources may present eye-safety risks depending on wavelength, optical power, and optics. Before any physical build, review manufacturer safety guidance and use an appropriately rated, low-power setup.
+See [the full roadmap](1_Project_Description/roadmap.md).
+
+## Limitations and safety
+The current model does not include optical power budgets, lens geometry, photodiode responsivity, shot noise, analogue-front-end bandwidth or saturation, ADC quantization, or measured ambient-light interference. It cannot establish detection distance or medical usefulness.
+
+IR sources may present eye-safety risks depending on wavelength, optical power, and optics. Review manufacturer guidance before any physical build.
+
+## Project principles
+- Reproducible experiments and explicit assumptions.
+- Clear separation of simulation results from bench measurements.
+- Traceability from requirements to tests.
+- Component selection based on datasheets, not guesses.
+- Original implementation; repository organization is inspired by open engineering practice, not copied from another project.
 
 ## License
-MIT; see [LICENSE](LICENSE).
+MIT — see [LICENSE](LICENSE).
