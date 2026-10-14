@@ -15,7 +15,7 @@ At a fixed target false-alarm probability, how does detection probability change
 
 ![Empirical ROC at -24 dB](5_Simulations/results/roc_curve.svg)
 
-Baseline: 1,000 signal-present trials per SNR; 5,000 noise-only records for threshold calibration; 5,000 independent noise-only records for false-alarm validation; seed `20261014`; target false-alarm probability 5%.
+Baseline: 1,000 signal-present trials per SNR; 5,000 noise-only records for threshold calibration; 5,000 independent noise-only records for false-alarm validation; seed \`20261014\`; target false-alarm probability 5%.
 
 - At -27 dB, simulated detection was 5.4% for energy detection and 63.2% for matched-filter detection (1,000 trials each).
 - Independently validated false-alarm rates were 5.32% and 5.28%, respectively.
@@ -37,26 +37,26 @@ Raw data: [metrics.csv](5_Simulations/results/metrics.csv) · [ROC coordinates](
 
 Requires Python 3.10+.
 
-```bash
+\`\`\`bash
 python -m venv .venv
-# Windows: .venv\Scripts\activate
+# Windows: .venv\\Scripts\\activate
 # macOS/Linux: source .venv/bin/activate
 python -m pip install -e ".[dev]"
 pytest
 python -m iris_sim --output 5_Simulations/results --trials 1000 --seed 20261014
-```
+\`\`\`
 
 Optional parameters:
 
-```bash
+\`\`\`bash
 python -m iris_sim --trials 2000 --calibration-trials 10000 --validation-trials 10000 --target-false-alarm 0.01 --roc-snr -24
-```
+\`\`\`
 
-The ROC SNR must be included in the sweep; the default includes -24 dB. Outputs: `metrics.csv`, `roc_curve.csv`, `waveform.png`, `detection_sweep.png`, and `roc_curve.png`.
+The ROC SNR must be included in the sweep; the default includes -24 dB. Outputs: \`metrics.csv\`, \`roc_curve.csv\`, \`waveform.png\`, \`detection_sweep.png\`, and \`roc_curve.png\`.
 
 ## Architecture
 
-```mermaid
+\`\`\`mermaid
 flowchart TD
     A[Reference burst and settings] --> B[Scale signal power for SNR]
     B --> C[Add fixed-variance AWGN]
@@ -70,7 +70,7 @@ flowchart TD
     E --> J
     I --> K[CSV, plots, reproducible report]
     J --> K
-```
+\`\`\`
 
 ## Hardware direction — not yet built
 Two architectures are under consideration:
@@ -83,22 +83,6 @@ Candidate manufacturer documents:
 - [Vishay TSAL6200 emitter](https://www.vishay.com/docs/81010/tsal6200.pdf)
 
 These are candidates, not a finalized bill of materials. Verify exact variants, carrier compatibility, current limits, voltage levels, and safety requirements before buying or assembling.
-
-## Repository map
-```text
-1_Project_Description/       requirements, roadmap, design decisions
-2_System_Architecture/       architecture and signal flow
-3_Sensor_and_Power/          receiver trade study and power budget
-4_Schematics_and_Hardware/   design gate and preliminary BOM
-5_Simulations/               experiment protocol and results
-6_Application_Notes/         detector theory and limitations
-7_Component_Datasheets/      manufacturer-document register
-8_Utils/                     evidence conventions
-9_Firmware_and_Software/     Python simulation package
-docs/                        test plan, validation notes, changelog
-tests/                       automated unit tests
-.github/workflows/           continuous integration
-```
 
 ## Roadmap
 - [x] Reproducible burst and AWGN simulation.
