@@ -21,7 +21,7 @@ Baseline: 1,000 signal-present trials per SNR; 5,000 noise-only records for thre
 - Independently validated false-alarm rates were 5.32% and 5.28%, respectively.
 - These depend on the idealized model, reference waveform, thresholds, and SNR convention. They are not hardware performance claims.
 
-Raw data: [metrics.csv](5_Simulations/results/metrics.csv) · [ROC coordinates](5_Simulations/results/roc_curve.csv) · [experiment protocol](5_Simulations/experiment_plan.md) · [validation notes](docs/test_results.md)
+Raw data: [metrics.csv](5_Simulations/results/metrics.csv) · [downsampled ROC coordinates (21 display points)](5_Simulations/results/roc_curve.csv) · [experiment protocol](5_Simulations/experiment_plan.md) · [validation notes](docs/test_results.md). Re-running the CLI exports the full 101-point ROC sweep.
 
 ## Implemented
 - Deterministic on/off-keyed burst generation.
