@@ -1,10 +1,14 @@
-snr_db,trials,energy_detection_rate,matched_filter_detection_rate,energy_false_alarm_rate,matched_filter_false_alarm_rate,seed
--12,100,1.0,1.0,0.08,0.04,20261013
--9,100,1.0,1.0,0.03,0.05,20261013
--6,100,0.01,1.0,0.07,0.08,20261013
--3,100,0.0,1.0,0.03,0.06,20261013
-0,100,0.0,1.0,0.03,0.05,20261013
-3,100,0.0,1.0,0.03,0.09,20261013
-6,100,0.0,1.0,0.02,0.1,20261013
-9,100,0.0,1.0,0.04,0.04,20261013
-12,100,0.0,1.0,0.08,0.02,20261013
+snr_db,trials,energy_detection_rate,energy_ci95_low,energy_ci95_high,matched_filter_detection_rate,matched_filter_ci95_low,matched_filter_ci95_high,energy_false_alarm_rate_validation,matched_filter_false_alarm_rate_validation,target_false_alarm_rate,calibration_trials,validation_trials,seed,noise_model,result_type
+-36,1000,0.043,0.032078,0.057419,0.158,0.136707,0.18191,0.0532,0.0528,0.05,5000,5000,20261014,unit-variance AWGN,simulation_not_measurement
+-33,1000,0.053,0.040746,0.068675,0.252,0.226074,0.279824,0.0532,0.0528,0.05,5000,5000,20261014,unit-variance AWGN,simulation_not_measurement
+-30,1000,0.054,0.041621,0.069792,0.376,0.346506,0.406443,0.0532,0.0528,0.05,5000,5000,20261014,unit-variance AWGN,simulation_not_measurement
+-27,1000,0.054,0.041621,0.069792,0.632,0.601657,0.661333,0.0532,0.0528,0.05,5000,5000,20261014,unit-variance AWGN,simulation_not_measurement
+-24,1000,0.076,0.061149,0.094096,0.875,0.853056,0.894075,0.0532,0.0528,0.05,5000,5000,20261014,unit-variance AWGN,simulation_not_measurement
+-21,1000,0.087,0.071075,0.106087,0.986,0.976638,0.991643,0.0532,0.0528,0.05,5000,5000,20261014,unit-variance AWGN,simulation_not_measurement
+-18,1000,0.123,0.104074,0.144812,1,0.996173,1,0.0532,0.0528,0.05,5000,5000,20261014,unit-variance AWGN,simulation_not_measurement
+-15,1000,0.243,0.217433,0.270535,1,0.996173,1,0.0532,0.0528,0.05,5000,5000,20261014,unit-variance AWGN,simulation_not_measurement
+-12,1000,0.591,0.560235,0.621068,1,0.996173,1,0.0532,0.0528,0.05,5000,5000,20261014,unit-variance AWGN,simulation_not_measurement
+-9,1000,0.983,0.972944,0.989359,1,0.996173,1,0.0532,0.0528,0.05,5000,5000,20261014,unit-variance AWGN,simulation_not_measurement
+-6,1000,1,0.996173,1,1,0.996173,1,0.0532,0.0528,0.05,5000,5000,20261014,unit-variance AWGN,simulation_not_measurement
+-3,1000,1,0.996173,1,1,0.996173,1,0.0532,0.0528,0.05,5000,5000,20261014,unit-variance AWGN,simulation_not_measurement
+0,1000,1,0.996173,1,1,0.996173,1,0.0532,0.0528,0.05,5000,5000,20261014,unit-variance AWGN,simulation_not_measurement

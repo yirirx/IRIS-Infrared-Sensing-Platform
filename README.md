@@ -1,44 +1,36 @@
 # IRIS — Infrared Sensing & Signal Processing Platform
 
-![Status](https://img.shields.io/badge/status-simulation%20prototype-blue) ![Python](https://img.shields.io/badge/Python-3.10%2B-3776AB) ![License](https://img.shields.io/badge/license-MIT-green)
+![Status](https://img.shields.io/badge/status-simulation%20%2B%20design-blue) ![Python](https://img.shields.io/badge/Python-3.10%2B-3776AB) ![License](https://img.shields.io/badge/license-MIT-green)
 
-**IRIS** is an open engineering project exploring modulated infrared (IR) signals, noise, and digital detection. The goal is to build a traceable path from repeatable signal-processing experiments to a carefully documented low-power physical prototype.
+**IRIS** is an open engineering project studying modulated infrared signals, digital detection, and the path from simulation to a documented low-power optical prototype.
 
-> **Current scope:** software simulation only. No physical prototype, measured detection range, calibrated optical sensitivity, or hardware performance is claimed.
+> **Current status:** the software simulation and preliminary component trade study are in progress. No physical prototype, measured range, calibrated sensitivity, or hardware performance is claimed.
 
-## Current simulation result
+## Research question
 
-![Simulated detection rate versus SNR](5_Simulations/results/detection_sweep.svg)
+At a stated false-alarm operating point, how does detection probability change with signal-to-noise ratio (SNR) for an energy detector versus a matched filter when detecting a known burst in additive white Gaussian noise?
 
-The chart summarizes the committed CSV for nine SNR settings, with 100 simulated trials per point. The matched-filter curve is high for this particular reference waveform and threshold setup; this is not evidence of real-world range or performance. Threshold calibration, processing gain, and noise assumptions are key topics for the next experiment iteration.
+## Current simulation baseline
 
-Raw values: [metrics.csv](5_Simulations/results/metrics.csv)
+![Monte Carlo detection probability versus SNR](5_Simulations/results/detection_sweep.svg)
 
-## What it does today
-- Generates a repeatable on/off-keyed sinusoidal burst.
-- Applies scalar gain and additive Gaussian noise.
-- Compares energy detection with matched-filter scoring.
-- Runs Monte Carlo trials over a signal-to-noise ratio (SNR) sweep.
-- Exports metrics to CSV and plots.
-- Includes unit tests, architecture notes, requirements, limitations, and a staged roadmap.
+The experiment uses 1,000 signal-present trials per SNR, 5,000 noise-only windows for threshold calibration, and 5,000 independent noise-only windows for false-alarm validation. It reports Wilson 95% confidence intervals. These are simulation results only.
 
-## Repository map
-```text
-1_Project_Description/       requirements, roadmap, design decisions
-2_System_Architecture/       architecture diagram and signal flow
-3_Sensor_and_Power/          sensor evaluation and power-budget template
-4_Schematics_and_Hardware/   hardware status and preliminary BOM
-5_Simulations/               experiment plan and results
-6_Application_Notes/         detection theory and limitations
-7_Component_Datasheets/      component-document register
-8_Utils/                     evidence and plotting conventions
-9_Firmware_and_Software/     Python simulation package
-docs/                        test plan, results, changelog
-tests/                       automated unit tests
-.github/workflows/           CI test workflow
-```
+- [Metrics CSV](5_Simulations/results/metrics.csv)
+- [Experiment protocol](5_Simulations/experiment_plan.md)
+- [Simulation validation record](docs/test_results.md)
+
+## What is implemented
+- Deterministic on/off-keyed burst generation.
+- Fixed-variance AWGN channel and explicit SNR definition.
+- Energy and matched-filter detector scores.
+- Independent noise-only threshold calibration and false-alarm validation.
+- Wilson 95% confidence intervals for Monte Carlo proportions.
+- CSV and plots, automated tests, and GitHub Actions.
+- Preliminary receiver architecture trade study using manufacturer datasheets.
 
 ## Quick start
+
 Requires Python 3.10+.
 
 ```bash
@@ -47,45 +39,75 @@ python -m venv .venv
 # macOS/Linux: source .venv/bin/activate
 python -m pip install -e ".[dev]"
 pytest
-python -m iris_sim --output 5_Simulations/results --trials 100
+python -m iris_sim --output 5_Simulations/results --trials 1000 --seed 20261014
 ```
 
-The simulation writes `waveform.png`, `detection_sweep.png`, and `metrics.csv` to the output directory.
+Optional experiment controls:
+
+```bash
+python -m iris_sim --trials 2000 --calibration-trials 10000 --validation-trials 10000 --target-false-alarm 0.01
+```
 
 ## System architecture
 
 ```mermaid
 flowchart LR
- A[Experiment parameters] --> B[Modulated IR burst]
- B --> C[Gain + noise model]
- C --> D[Received samples]
+ A[Experiment parameters] --> B[Reference IR burst]
+ B --> C[Scale clean signal for SNR]
+ C --> D[Add fixed-variance AWGN]
  D --> E[Energy detector]
  D --> F[Matched-filter detector]
- E --> G[Metrics and plots]
- F --> G
- G --> H[CSV + report]
+ G[Noise-only calibration] --> H[Thresholds]
+ H --> E
+ H --> F
+ E --> I[Detection probability + confidence intervals]
+ F --> I
+ J[Independent noise-only validation] --> K[False-alarm estimates]
+ I --> L[CSV, plots, report]
+ K --> L
 ```
 
-## Engineering roadmap
-1. **Simulation foundation:** implemented; six local unit tests passed.
-2. **Stronger experiments:** improve threshold calibration, confidence intervals, sensitivity analysis, and reporting.
-3. **Sensor and circuit selection:** compare receiver architectures using actual datasheets.
-4. **Bench prototype:** build a safe, low-power setup and compare captured samples with simulation.
-5. **Demonstration:** publish repeatable measurements only after documenting the setup and uncertainty.
+## Preliminary hardware direction
 
-See [the full roadmap](1_Project_Description/roadmap.md).
+Two different receiver paths are documented; the project has **not** frozen a final BOM.
 
-## Limitations and safety
-The current model does not include optical power budgets, lens geometry, photodiode responsivity, shot noise, analogue-front-end bandwidth or saturation, ADC quantization, or measured ambient-light interference. It cannot establish detection distance or medical usefulness.
+1. **Simple digital demonstrator:** a compatible Vishay TSSP94038 receiver module and a 940 nm emitter. This produces a demodulated digital output and is suitable for a first optical-link detection demo, but cannot validate raw analogue waveforms directly.
+2. **Waveform research demonstrator:** Vishay BPW34 photodiode plus a designed transimpedance amplifier and ADC. This is more flexible for waveform capture but requires a reviewed analogue design.
 
-IR sources may present eye-safety risks depending on wavelength, optical power, and optics. Review manufacturer guidance before any physical build.
+A candidate 940 nm emitter is Vishay TSAL6200. Exact variants, carrier frequency, current limits, power budget, and eye-safety conditions must be checked before purchase or assembly.
 
-## Project principles
-- Reproducible experiments and explicit assumptions.
-- Clear separation of simulation results from bench measurements.
-- Traceability from requirements to tests.
-- Component selection based on datasheets, not guesses.
-- Original implementation; repository organization is inspired by open engineering practice, not copied from another project.
+- [TSSP940 receiver datasheet](https://www.vishay.com/docs/82843/tssp940.pdf)
+- [BPW34 photodiode datasheet](https://www.vishay.com/docs/81521/bpw34.pdf)
+- [TSAL6200 emitter datasheet](https://www.vishay.com/docs/81010/tsal6200.pdf)
+
+See [sensor trade study](3_Sensor_and_Power/sensor_options.md) and [hardware design gate](4_Schematics_and_Hardware/hardware_status.md).
+
+## Repository map
+
+```text
+1_Project_Description/       requirements, roadmap, design decisions
+2_System_Architecture/       architecture and signal flow
+3_Sensor_and_Power/          sensor trade study and power budget
+4_Schematics_and_Hardware/   design gate and preliminary BOM
+5_Simulations/               experiment protocol and results
+6_Application_Notes/         detector theory and model limitations
+7_Component_Datasheets/      manufacturer-document register
+8_Utils/                     evidence and plotting conventions
+9_Firmware_and_Software/     Python simulation package
+docs/                        test plan, validation record, changelog
+tests/                       automated tests
+.github/workflows/           CI test workflow
+```
+
+## Roadmap
+1. **Simulation:** improve statistical validity and reproducibility (in progress).
+2. **Circuit design:** select receiver path and document a reviewed schematic.
+3. **Bench prototype:** capture repeatable data with setup and uncertainty recorded.
+4. **Model validation:** compare measured results with a receiver-specific model.
+5. **Research report:** publish methods, limitations, code, and evidence.
+
+## Safety and scientific integrity
+Infrared sources can present eye-safety risks even when the beam is not visible. Review the manufacturer's eye-safety guidance and operate only a low-power, non-eye-directed setup. Do not infer range or medical applicability from the simulation.
 
 ## License
 MIT — see [LICENSE](LICENSE).

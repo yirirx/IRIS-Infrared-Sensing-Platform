@@ -1,9 +1,7 @@
 """Monte Carlo experiment with independent threshold calibration and validation."""
 import csv
 from pathlib import Path
-
 import numpy as np
-
 from .detectors import energy_score, matched_filter_score
 from .signal_model import make_burst
 
@@ -56,23 +54,16 @@ def run_experiment(
         raise ValueError("trials must be positive; calibration/validation need at least 100")
     if not 0.0 < target_false_alarm < 1.0:
         raise ValueError("target_false_alarm must be between 0 and 1")
-    snr_values = list(range(-12, 13, 3)) if snr_values is None else list(snr_values)
+    snr_values = list(range(-36, 1, 3)) if snr_values is None else list(snr_values)
     if not snr_values:
         raise ValueError("snr_values must not be empty")
 
     rng = np.random.default_rng(seed)
     time_s, reference = make_burst()
-    energy_cal, matched_cal = _noise_scores(
-        rng, calibration_trials, reference.size, reference
-    )
-    # The "higher" quantile selects an observed calibration score, avoiding
-    # interpolation to a threshold that is not an observed score.
+    energy_cal, matched_cal = _noise_scores(rng, calibration_trials, reference.size, reference)
     energy_threshold = float(np.quantile(energy_cal, 1 - target_false_alarm, method="higher"))
     matched_threshold = float(np.quantile(matched_cal, 1 - target_false_alarm, method="higher"))
-
-    energy_val, matched_val = _noise_scores(
-        rng, validation_trials, reference.size, reference
-    )
+    energy_val, matched_val = _noise_scores(rng, validation_trials, reference.size, reference)
     energy_false = int(np.count_nonzero(energy_val > energy_threshold))
     matched_false = int(np.count_nonzero(matched_val > matched_threshold))
     energy_pfa_ci = wilson_interval(energy_false, validation_trials)
@@ -118,10 +109,16 @@ def run_experiment(
             "result_type": "simulation_not_measurement",
         })
 
+    csv_fields = [
+        "snr_db", "trials", "energy_detection_rate", "energy_ci95_low", "energy_ci95_high",
+        "matched_filter_detection_rate", "matched_filter_ci95_low", "matched_filter_ci95_high",
+        "energy_false_alarm_rate_validation", "matched_filter_false_alarm_rate_validation",
+        "target_false_alarm_rate", "calibration_trials", "validation_trials", "seed", "noise_model", "result_type",
+    ]
     with (output_dir / "metrics.csv").open("w", newline="", encoding="utf-8") as handle:
-        writer = csv.DictWriter(handle, fieldnames=list(rows[0].keys()))
+        writer = csv.DictWriter(handle, fieldnames=csv_fields)
         writer.writeheader()
-        writer.writerows(rows)
+        writer.writerows({key: row[key] for key in csv_fields} for row in rows)
     _plot_waveform(output_dir / "waveform.png", time_s, reference, example_received)
     _plot_sweep(output_dir / "detection_sweep.png", rows)
     return rows
@@ -131,7 +128,6 @@ def _plot_waveform(path, time_s, reference, received):
     import matplotlib
     matplotlib.use("Agg")
     import matplotlib.pyplot as plt
-
     fig, axes = plt.subplots(2, 1, figsize=(10, 6), sharex=True)
     axes[0].plot(time_s * 1000, reference, linewidth=1)
     axes[0].set_title("Reference burst (simulation; arbitrary amplitude)")
@@ -151,7 +147,6 @@ def _plot_sweep(path, rows):
     import matplotlib
     matplotlib.use("Agg")
     import matplotlib.pyplot as plt
-
     x = [row["snr_db"] for row in rows]
     fig, axis = plt.subplots(figsize=(9, 5))
     for key, low, high, label, marker in (
