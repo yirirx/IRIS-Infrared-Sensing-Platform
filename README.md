@@ -9,6 +9,12 @@
 ## Research question
 At a fixed target false-alarm probability, how does detection probability change with SNR for an energy detector versus a matched filter detecting a known burst?
 
+## Interactive simulation dashboard
+
+**[Launch the IRIS Simulation Control Room](10_Simulation_Dashboard/index.html)** — adjust SNR, false-alarm target, trial count, and noise scale; run a browser-side Monte Carlo experiment; inspect waveform, detection sweep, ROC, confidence intervals, and export a CSV. See the [dashboard documentation](10_Simulation_Dashboard/README.md).
+
+The dashboard is a standalone educational model in the browser, separate from the Python CLI. It is not a physical receiver measurement.
+
 ## Simulation results
 
 ![Detection probability versus SNR](5_Simulations/results/detection_sweep.svg)
