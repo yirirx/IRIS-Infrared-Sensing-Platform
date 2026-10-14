@@ -11,7 +11,7 @@ At a fixed target false-alarm probability, how does detection probability change
 
 ## Interactive simulation dashboard
 
-**[Launch the IRIS Simulation Control Room](10_Simulation_Dashboard/index.html)** — adjust SNR, false-alarm target, trial count, and noise scale; run a browser-side Monte Carlo experiment; inspect waveform, detection sweep, ROC, confidence intervals, and export a CSV. See the [dashboard documentation](10_Simulation_Dashboard/README.md).
+**[Open the IRIS Simulation Control Room source](10_Simulation_Dashboard/index.html)** — adjust SNR, false-alarm target, trial count, and noise scale; run a browser-side Monte Carlo experiment; inspect waveform, detection sweep, ROC, confidence intervals, and export a CSV. It can be run locally by opening the HTML file. To publish a live website, follow the one-time [GitHub Pages setup instructions](10_Simulation_Dashboard/README.md).
 
 The dashboard is a standalone educational model in the browser, separate from the Python CLI. It is not a physical receiver measurement.
 
