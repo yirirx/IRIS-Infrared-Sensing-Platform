@@ -4,8 +4,8 @@ A self-contained browser dashboard for exploring the simplified IRIS burst-detec
 
 ## Open the dashboard
 
-- Open `index.html` in a modern desktop or mobile browser.
-- Or, after GitHub Pages is enabled for this repository, visit the Pages URL for this project.
+- **Run locally:** download the repository and open `index.html` in a modern browser.
+- **Publish as a live web page:** in the repository, open **Settings → Pages** and set the build/deployment source to **GitHub Actions**. Then open **Actions → Deploy IRIS dashboard to GitHub Pages → Run workflow**. The workflow is included, but the first deployment cannot finish until Pages is enabled in repository settings. After a successful deployment, GitHub will show the live URL in the workflow summary.
 - The dashboard performs a separate browser-side Monte Carlo simulation; it does not execute the Python package in the repository.
 
 ## Controls
