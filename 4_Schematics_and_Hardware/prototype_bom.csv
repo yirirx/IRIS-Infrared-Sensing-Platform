@@ -1,0 +1,5 @@
+Reference,Part/role,Selection status,Key criteria,Notes
+D1,IR emitter,Not selected,Wavelength; radiant intensity; forward current; safety,Select after requirements review
+U1,IR receiver,Not selected,Bandwidth; output type; ambient-light behaviour,Compare receiver architectures
+U2,Microcontroller or ADC,Not selected,Sampling rate; resolution; interface,Choose if raw sampling is required
+R/C,Support components,Not selected,Datasheet reference design,Only after schematic review

@@ -1,0 +1,5 @@
+Block,Supply voltage (V),Typical current (mA),Peak current (mA),Duty cycle,Source/notes
+IR emitter driver,,,,,Not selected
+Receiver / analogue front end,,,,,Not selected
+Microcontroller / ADC,,,,,Not selected
+Host interface,,,,,Not selected
