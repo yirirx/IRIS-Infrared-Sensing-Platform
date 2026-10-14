@@ -1,5 +1,6 @@
 Block,Supply voltage (V),Typical current (mA),Peak current (mA),Duty cycle,Source/notes
-IR emitter driver,,,,,Not selected
-Receiver / analogue front end,,,,,Not selected
-Microcontroller / ADC,,,,,Not selected
-Host interface,,,,,Not selected
+IR emitter TSAL6200,,,,,Not calculated; derive from supply and verified datasheet conditions
+Integrated receiver TSSP94038,2.0-3.6,,,,Check exact datasheet table and microcontroller logic compatibility
+BPW34 photodiode receiver,,,,,Photodiode current and AFE supply depend on final circuit
+Microcontroller / ADC,,,,,Select after deciding digital module vs raw waveform
+Host interface,,,,,USB or serial link not selected

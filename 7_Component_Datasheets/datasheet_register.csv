@@ -1,4 +1,4 @@
-Reference,Manufacturer,Document,Revision,URL,Reviewed?,Notes
-D1,,,,,No,Emitter not selected
-U1,,,,,No,Receiver not selected
-U2,,,,,No,ADC or microcontroller not selected
+Reference,Manufacturer,Part,Document,Revision,URL,Reviewed?,Selection status,Notes
+D1,Vishay,TSAL6200,IR emitter datasheet,2.4,https://www.vishay.com/docs/81010/tsal6200.pdf,No,Candidate,940 nm; verify limits and pulse conditions before design
+U1,Vishay,TSSP94038,IR sensor module datasheet,1.5,https://www.vishay.com/docs/82843/tssp940.pdf,No,Candidate,Digital demodulating output; verify carrier variant
+U2,Vishay,BPW34,Silicon PIN photodiode datasheet,2.1,https://www.vishay.com/docs/81521/bpw34.pdf,No,Candidate,Analogue receiver requires a separate AFE design
