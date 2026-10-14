@@ -8,6 +8,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - run: python -c "import re; from pathlib import Path; s=Path('10_Simulation_Dashboard/index.html').read_text(encoding='utf-8'); m=re.search(r'<script>([\\s\\S]*?)</script>', s); assert m, 'dashboard script not found'; Path('/tmp/iris-dashboard.js').write_text(m.group(1), encoding='utf-8')"
+      - run: node --check /tmp/iris-dashboard.js
       - uses: actions/setup-python@v5
         with:
           python-version: '3.11'
