@@ -79,9 +79,17 @@ def run_experiment(output_dir, seed=20261014, trials=1000, snr_values=None,
     rows = []
     example_received = None
     roc_signal_energy = roc_signal_matched = None
+    # With unit-variance AWGN, the normalized matched-filter score is
+    # N(0, 1) under H0 and N(sqrt(N * linear_SNR), 1) under H1.
+    # This gives an analytical benchmark independent of Monte Carlo counts.
+    from math import erfc, sqrt
+    theoretical_pfa = 0.5 * erfc(matched_threshold / sqrt(2.0))
     for snr_db in snr_values:
         signal_power = 10.0 ** (float(snr_db) / 10.0)
         clean = reference * np.sqrt(signal_power / ref_power)
+        theoretical_pd = 0.5 * erfc(
+            (matched_threshold - sqrt(signal_power * reference.size)) / sqrt(2.0)
+        )
         energy_hits = matched_hits = 0
         signal_energy_scores, signal_matched_scores = [], []
         for _ in range(trials):
@@ -109,6 +117,8 @@ def run_experiment(output_dir, seed=20261014, trials=1000, snr_values=None,
             "matched_filter_false_alarm_ci95_low": matched_pfa_ci[0], "matched_filter_false_alarm_ci95_high": matched_pfa_ci[1],
             "target_false_alarm_rate": target_false_alarm,
             "energy_threshold": energy_threshold, "matched_filter_threshold": matched_threshold,
+            "matched_filter_theoretical_pfa": theoretical_pfa,
+            "matched_filter_theoretical_detection_probability": theoretical_pd,
             "calibration_trials": calibration_trials, "validation_trials": validation_trials,
             "seed": seed, "noise_model": "unit-variance AWGN", "result_type": "simulation_not_measurement",
         })
