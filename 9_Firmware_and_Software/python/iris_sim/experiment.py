@@ -210,8 +210,8 @@ def _plot_sweep(path, rows):
         ("matched_filter_detection_rate", "matched_filter_ci95_low", "matched_filter_ci95_high", "Matched filter", "s"),
     ):
         y = np.asarray([row[key] for row in rows])
-        lower = y - np.asarray([row[low] for row in rows])
-        upper = np.asarray([row[high] for row in rows]) - y
+        lower = np.maximum(0.0, y - np.asarray([row[low] for row in rows]))
+        upper = np.maximum(0.0, np.asarray([row[high] for row in rows]) - y)
         axis.errorbar(x, y, yerr=np.vstack([lower, upper]), marker=marker, capsize=3, label=label)
     axis.set_xlabel("SNR (dB; mean signal power / noise variance)")
     axis.set_ylabel("Detection probability")
