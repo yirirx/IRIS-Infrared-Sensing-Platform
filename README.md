@@ -35,7 +35,7 @@ Raw data: [metrics.csv](5_Simulations/results/metrics.csv) · [downsampled ROC c
 - Deterministic on/off-keyed burst generation.
 - Fixed-variance AWGN channel model and explicit SNR convention.
 - Energy and matched-filter detector scores.
-- A standalone sinusoidal ambient-flicker interference utility for controlled stress tests (not yet integrated into the primary Monte Carlo experiment).
+- Optional sinusoidal ambient-flicker interference in calibration, independent false-alarm validation, and signal-present Monte Carlo trials; randomized phase per record.
 - Independent noise-only threshold calibration and false-alarm validation.
 - Monte Carlo estimates with Wilson 95% confidence intervals.
 - Empirical ROC curve at a configurable SNR.
@@ -98,8 +98,9 @@ These are candidates, not a finalized bill of materials. Verify exact variants, 
 - [x] Independent threshold calibration and false-alarm validation.
 - [x] Wilson 95% intervals and empirical ROC export.
 - [ ] Compare Monte Carlo results with analytical predictions.
-- [x] Add a standalone sinusoidal ambient-flicker interference utility with parameter validation.
-- [ ] Integrate interference into the Monte Carlo experiment and compare detector robustness under matched calibration conditions.
+- [x] Add a sinusoidal ambient-flicker model with parameter validation.
+- [x] Integrate optional interference into threshold calibration, independent false-alarm validation, and detection trials.
+- [ ] Run a controlled detector-robustness sweep across multiple interference amplitudes and frequencies.
 - [ ] Add timing mismatch.
 - [ ] Select receiver architecture and design a reviewed circuit.
 - [ ] Build a safe low-power bench prototype and record raw measurements.
