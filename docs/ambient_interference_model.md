@@ -17,7 +17,7 @@ It is a transparent first approximation for periodic interference. It lets us te
 - The amplitude is not derived from illuminance, optical power, photodiode responsivity, or receiver gain.
 - Real ambient-light effects can include a DC component, mains-related flicker, switching-lighting harmonics, shot noise, saturation, and analogue-front-end behavior.
 - The utility does not model those effects and does not claim that any selected frequency or amplitude represents a particular real environment.
-- The primary Monte Carlo experiment currently uses its original AWGN-only model. This helper is not yet connected to threshold calibration or detector performance sweeps.
+- The Monte Carlo experiment now optionally includes this interference in threshold calibration, independent false-alarm validation, and signal-present trials. The phase is randomized independently for each record. The default remains AWGN-only when the amplitude is zero.
 
 ## Next experiment
-Integrate the disturbance into noise-only calibration, independent false-alarm validation, and signal-present trials consistently. Compare detectors at the same stated interference conditions and clearly label the outputs as simulation. Do not compare thresholds calibrated under different conditions as though they were directly equivalent.
+Run a controlled sweep over several interference amplitudes and frequencies. Calibrate each detector and validate false alarms under the same interference distribution used for signal-present trials. Compare detectors at the same stated conditions and clearly label outputs as simulation. Do not compare thresholds calibrated under different conditions as though they were directly equivalent. The analytical matched-filter benchmark is disabled (written as NaN) when interference is enabled because the AWGN-only derivation no longer applies.
