@@ -137,3 +137,8 @@ The controlled ambient-interference sweep has completed. See the [initial result
 ### Threshold-mismatch experiment
 
 A second experiment tests the practical case where detector thresholds are calibrated in clean AWGN and the environment later gains periodic interference. See [mismatch experiment code](9_Firmware_and_Software/python/iris_sim/mismatch.py). Its results are generated automatically alongside the calibrated-condition sweep when the robustness workflow runs.
+
+
+### Fixed-threshold mismatch results
+
+The second experiment completed successfully. Its report shows how a clean-calibrated threshold responds when sinusoidal interference is introduced: [read results](5_Simulations/mismatched_calibration/RESULTS_REPORT.md), [summary CSV](5_Simulations/mismatched_calibration/mismatched_calibration.csv), and [false-alarm plot](5_Simulations/mismatched_calibration/false_alarm_after_environment_change.png). These results are simulation-only.
