@@ -116,7 +116,7 @@ These are candidates, not a finalized bill of materials. Verify exact variants, 
 - [ ] Validate the model against measurements.
 
 ## Scientific integrity and safety
-Confidence intervals quantify Monte Carlo sampling uncertainty, not uncertainty in a physical receiver. The model omits optical geometry, photodiode responsivity and shot noise, analogue-front-end bandwidth/noise, ADC quantization, ambient-light interference, and component tolerances. Do not infer detection range or medical applicability from this simulation.
+Confidence intervals quantify Monte Carlo sampling uncertainty, not uncertainty in a physical receiver. The model omits optical geometry, photodiode responsivity and shot noise, analogue-front-end bandwidth/noise, ADC quantization, realistic ambient-light effects beyond the optional idealized sinusoidal stress test, and component tolerances. Do not infer detection range or medical applicability from this simulation.
 
 IR may be invisible and still pose an eye hazard. Any future hardware work must follow manufacturer safety guidance and use a low-power, non-eye-directed setup.
 
