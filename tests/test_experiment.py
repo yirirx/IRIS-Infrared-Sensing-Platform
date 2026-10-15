@@ -98,3 +98,17 @@ def test_mismatched_calibration_writes_results(tmp_path):
     assert (tmp_path / "mismatch" / "mismatched_calibration.csv").exists()
     assert (tmp_path / "mismatch" / "false_alarm_after_environment_change.png").exists()
     assert rows[0]["calibration_condition"] == "clean_AWGN_only"
+
+
+def test_seed_stability_writes_summary(tmp_path):
+    from iris_sim.seed_stability import run_seed_stability
+
+    rows = run_seed_stability(
+        tmp_path / "stability", seeds=[11, 12], amplitudes=[0.0, 0.2],
+        snr_values=[-24], trials=30, calibration_trials=100,
+        validation_trials=100,
+    )
+    assert len(rows) == 4
+    assert (tmp_path / "stability" / "seed_stability.csv").exists()
+    assert (tmp_path / "stability" / "seed_stability.png").exists()
+    assert all(row["seed_count"] == 2 for row in rows)
