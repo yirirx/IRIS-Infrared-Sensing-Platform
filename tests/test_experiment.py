@@ -22,6 +22,11 @@ def test_experiment_writes_reproducible_outputs(tmp_path):
         saved = list(csv.DictReader(handle))
     assert len(saved) == 2
     assert saved[0]["result_type"] == "simulation_not_measurement"
+    assert 0.0 <= float(saved[0]["matched_filter_theoretical_pfa"]) <= 1.0
+    assert 0.0 <= float(saved[0]["matched_filter_theoretical_detection_probability"]) <= 1.0
+    assert float(saved[1]["matched_filter_theoretical_detection_probability"]) > float(
+        saved[0]["matched_filter_theoretical_detection_probability"]
+    )
     assert float(saved[0]["energy_ci95_low"]) <= float(saved[0]["energy_detection_rate"])
     assert (out / "waveform.png").exists()
     assert (out / "detection_sweep.png").exists()
