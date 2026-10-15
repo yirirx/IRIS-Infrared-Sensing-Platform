@@ -73,3 +73,15 @@ def test_interference_sweep_writes_summary(tmp_path):
     assert (tmp_path / "sweep" / "false_alarm_vs_interference.png").exists()
     assert {row["ambient_amplitude"] for row in rows} == {0.0, 0.2}
     assert all(row["result_type"] == "simulation_not_measurement" for row in rows)
+    assert "energy_false_alarm_ci95_low" in rows[0]
+    assert "matched_filter_false_alarm_ci95_high" in rows[0]
+
+
+def test_interference_sweep_rejects_duplicate_amplitudes(tmp_path):
+    from iris_sim.sweep import run_interference_sweep
+
+    with pytest.raises(ValueError, match="unique"):
+        run_interference_sweep(
+            tmp_path / "sweep", amplitudes=[0.1, 0.1], snr_values=[-24],
+            trials=10, calibration_trials=100, validation_trials=100,
+        )
