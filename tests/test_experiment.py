@@ -1,4 +1,5 @@
 import csv
+import numpy as np
 import pytest
 from iris_sim.experiment import run_experiment, wilson_interval
 
@@ -39,3 +40,21 @@ def test_invalid_false_alarm_rate_rejected(tmp_path):
     with pytest.raises(ValueError):
         run_experiment(tmp_path, trials=10, calibration_trials=100, validation_trials=100,
                        target_false_alarm=1.0)
+
+
+def test_ambient_interference_is_recorded_and_awgn_theory_is_disabled(tmp_path):
+    rows = run_experiment(
+        tmp_path, seed=7, trials=120, snr_values=[-24, 0],
+        calibration_trials=500, validation_trials=500, roc_snr_db=-24,
+        ambient_amplitude=0.2, ambient_frequency_hz=1000,
+    )
+    assert rows[0]["ambient_interference_amplitude"] == 0.2
+    assert rows[0]["ambient_interference_frequency_hz"] == 1000
+    assert rows[0]["ambient_interference_phase"] == "randomized_per_record"
+    assert np.isnan(rows[0]["matched_filter_theoretical_detection_probability"])
+
+
+def test_invalid_ambient_frequency_rejected(tmp_path):
+    with pytest.raises(ValueError):
+        run_experiment(tmp_path, trials=10, calibration_trials=100, validation_trials=100,
+                       ambient_amplitude=0.1, ambient_frequency_hz=50000)
