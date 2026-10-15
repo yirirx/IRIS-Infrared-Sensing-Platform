@@ -142,3 +142,8 @@ A second experiment tests the practical case where detector thresholds are calib
 ### Fixed-threshold mismatch results
 
 The second experiment completed successfully. Its report shows how a clean-calibrated threshold responds when sinusoidal interference is introduced: [read results](5_Simulations/mismatched_calibration/RESULTS_REPORT.md), [summary CSV](5_Simulations/mismatched_calibration/mismatched_calibration.csv), and [false-alarm plot](5_Simulations/mismatched_calibration/false_alarm_after_environment_change.png). These results are simulation-only.
+
+
+### Multi-seed stability check
+
+The workflow also repeats the fixed-threshold experiment with five independent random seeds and reports the mean and between-seed standard deviation of false-alarm rates: [summary CSV](5_Simulations/seed_stability/seed_stability.csv) and [plot](5_Simulations/seed_stability/seed_stability.png). This checks Monte Carlo stability but does not remove limitations of the simplified signal model.
