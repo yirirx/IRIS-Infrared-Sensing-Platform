@@ -18,14 +18,22 @@ def wilson_interval(successes, trials, z=1.96):
     return max(0.0, centre - half), min(1.0, centre + half)
 
 
-def _score_noise(rng, count, reference, batch_size=256):
-    """Score noise-only records in batches so memory use stays bounded."""
+def _score_noise(rng, count, reference, batch_size=256, ambient_amplitude=0.0,
+                 ambient_frequency_hz=50.0, sample_rate_hz=100_000):
+    """Score noise-only records, optionally with randomized-phase sinusoidal interference."""
     energy_scores, matched_scores = [], []
     norm = float(np.linalg.norm(reference))
+    time_s = np.arange(reference.size, dtype=float) / sample_rate_hz
     remaining = count
     while remaining:
         n = min(batch_size, remaining)
         noise = rng.normal(0.0, 1.0, size=(n, reference.size))
+        if ambient_amplitude:
+            phases = rng.uniform(0.0, 2.0 * np.pi, size=(n, 1))
+            interference = ambient_amplitude * np.cos(
+                2.0 * np.pi * ambient_frequency_hz * time_s[None, :] + phases
+            )
+            noise = noise + interference
         energy_scores.extend(np.mean(noise**2, axis=1).tolist())
         matched_scores.extend((noise @ reference / norm).tolist())
         remaining -= n
@@ -44,12 +52,13 @@ def _roc_points(noise_scores, signal_scores, points=101):
 
 def run_experiment(output_dir, seed=20261014, trials=1000, snr_values=None,
                    calibration_trials=5000, validation_trials=5000,
-                   target_false_alarm=0.05, roc_snr_db=-24):
+                   target_false_alarm=0.05, roc_snr_db=-24,
+                   ambient_amplitude=0.0, ambient_frequency_hz=50.0):
     """Run fixed-noise-variance SNR sweep with independent threshold calibration.
 
     SNR is mean(clean_signal**2) / noise_variance over the complete observation
     window. Thresholds are calibrated on noise-only records and assessed on an
-    independent noise-only validation set. The channel is AWGN only.
+    independent noise-only validation set. The default channel is AWGN only; optional sinusoidal interference can be enabled for stress tests.
     """
     output_dir = Path(output_dir)
     output_dir.mkdir(parents=True, exist_ok=True)
@@ -57,6 +66,10 @@ def run_experiment(output_dir, seed=20261014, trials=1000, snr_values=None,
         raise ValueError("trials must be positive; calibration/validation need at least 100")
     if not 0.0 < target_false_alarm < 1.0:
         raise ValueError("target_false_alarm must be between 0 and 1")
+    if not np.isfinite(ambient_amplitude) or ambient_amplitude < 0:
+        raise ValueError("ambient_amplitude must be finite and non-negative")
+    if not np.isfinite(ambient_frequency_hz) or not 0 <= ambient_frequency_hz < 50_000:
+        raise ValueError("ambient_frequency_hz must be finite, non-negative, and below 50 kHz")
     snr_values = list(range(-36, 1, 3)) if snr_values is None else list(snr_values)
     if not snr_values:
         raise ValueError("snr_values must not be empty")
@@ -67,10 +80,12 @@ def run_experiment(output_dir, seed=20261014, trials=1000, snr_values=None,
     if ref_power <= 0:
         raise ValueError("reference signal must have nonzero power")
 
-    energy_cal, matched_cal = _score_noise(rng, calibration_trials, reference)
+    interference_args = {"ambient_amplitude": ambient_amplitude,
+                         "ambient_frequency_hz": ambient_frequency_hz}
+    energy_cal, matched_cal = _score_noise(rng, calibration_trials, reference, **interference_args)
     energy_threshold = float(np.quantile(energy_cal, 1-target_false_alarm, method="higher"))
     matched_threshold = float(np.quantile(matched_cal, 1-target_false_alarm, method="higher"))
-    energy_val, matched_val = _score_noise(rng, validation_trials, reference)
+    energy_val, matched_val = _score_noise(rng, validation_trials, reference, **interference_args)
     energy_false = int(np.count_nonzero(energy_val > energy_threshold))
     matched_false = int(np.count_nonzero(matched_val > matched_threshold))
     energy_pfa_ci = wilson_interval(energy_false, validation_trials)
@@ -83,17 +98,24 @@ def run_experiment(output_dir, seed=20261014, trials=1000, snr_values=None,
     # N(0, 1) under H0 and N(sqrt(N * linear_SNR), 1) under H1.
     # This gives an analytical benchmark independent of Monte Carlo counts.
     from math import erfc, sqrt
-    theoretical_pfa = 0.5 * erfc(matched_threshold / sqrt(2.0))
+    theoretical_pfa = (0.5 * erfc(matched_threshold / sqrt(2.0))
+                        if ambient_amplitude == 0 else float("nan"))
     for snr_db in snr_values:
         signal_power = 10.0 ** (float(snr_db) / 10.0)
         clean = reference * np.sqrt(signal_power / ref_power)
-        theoretical_pd = 0.5 * erfc(
+        theoretical_pd = (0.5 * erfc(
             (matched_threshold - sqrt(signal_power * reference.size)) / sqrt(2.0)
-        )
+        ) if ambient_amplitude == 0 else float("nan"))
         energy_hits = matched_hits = 0
         signal_energy_scores, signal_matched_scores = [], []
         for _ in range(trials):
             received = clean + rng.normal(0.0, 1.0, size=reference.size)
+            if ambient_amplitude:
+                phase = rng.uniform(0.0, 2.0 * np.pi)
+                time_s = np.arange(reference.size, dtype=float) / 100_000
+                received += ambient_amplitude * np.cos(
+                    2.0 * np.pi * ambient_frequency_hz * time_s + phase
+                )
             e_score = energy_score(received)
             m_score = matched_filter_score(received, reference)
             energy_hits += e_score > energy_threshold
@@ -119,8 +141,13 @@ def run_experiment(output_dir, seed=20261014, trials=1000, snr_values=None,
             "energy_threshold": energy_threshold, "matched_filter_threshold": matched_threshold,
             "matched_filter_theoretical_pfa": theoretical_pfa,
             "matched_filter_theoretical_detection_probability": theoretical_pd,
+            "ambient_interference_amplitude": ambient_amplitude,
+            "ambient_interference_frequency_hz": ambient_frequency_hz,
+            "ambient_interference_phase": "randomized_per_record" if ambient_amplitude else "disabled",
             "calibration_trials": calibration_trials, "validation_trials": validation_trials,
-            "seed": seed, "noise_model": "unit-variance AWGN", "result_type": "simulation_not_measurement",
+            "seed": seed,
+            "noise_model": "unit-variance AWGN plus sinusoidal interference" if ambient_amplitude else "unit-variance AWGN",
+            "result_type": "simulation_not_measurement",
         })
 
         if float(snr_db) == float(roc_snr_db):
