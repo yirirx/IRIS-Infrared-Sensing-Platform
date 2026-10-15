@@ -55,6 +55,14 @@ pytest
 python -m iris_sim --output 5_Simulations/results --trials 1000 --seed 20261014
 \`\`\`
 
+Run the controlled ambient-interference sweep (default amplitudes 0, 0.1, 0.2, 0.4, 0.8; frequency 1 kHz):
+
+\`\`\`bash
+python -m iris_sim.sweep --output 5_Simulations/interference_sweep --trials 1000 --calibration-trials 5000 --validation-trials 5000
+\`\`\`
+
+This writes one run folder per amplitude plus `interference_sweep.csv`, which records detection rates, confidence intervals, and independently validated false-alarm rates. Amplitude uses arbitrary signal units; it is not a calibrated measure of ambient illumination.
+
 Optional parameters:
 
 \`\`\`bash
@@ -100,7 +108,8 @@ These are candidates, not a finalized bill of materials. Verify exact variants, 
 - [ ] Compare Monte Carlo results with analytical predictions.
 - [x] Add a sinusoidal ambient-flicker model with parameter validation.
 - [x] Integrate optional interference into threshold calibration, independent false-alarm validation, and detection trials.
-- [ ] Run a controlled detector-robustness sweep across multiple interference amplitudes and frequencies.
+- [x] Add a reproducible Monte Carlo sweep across multiple interference amplitudes with independent calibration and validation at each condition.
+- [ ] Analyze sweep outputs and add a concise interpretation of observed robustness trends.
 - [ ] Add timing mismatch.
 - [ ] Select receiver architecture and design a reviewed circuit.
 - [ ] Build a safe low-power bench prototype and record raw measurements.
