@@ -40,11 +40,11 @@ jobs:
             --seed 20261015
       - name: Run clean-threshold mismatch experiment
         run: |
-          python -m iris_sim.mismatch \\
-            --output 5_Simulations/mismatched_calibration \\
-            --trials 1000 \\
-            --calibration-trials 5000 \\
-            --validation-trials 5000 \\
+          python -m iris_sim.mismatch \
+            --output 5_Simulations/mismatched_calibration \
+            --trials 1000 \
+            --calibration-trials 5000 \
+            --validation-trials 5000 \
             --seed 20261020
       - name: Commit reproducible simulation outputs
         run: |
