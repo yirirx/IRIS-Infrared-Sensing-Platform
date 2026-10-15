@@ -85,3 +85,16 @@ def test_interference_sweep_rejects_duplicate_amplitudes(tmp_path):
             tmp_path / "sweep", amplitudes=[0.1, 0.1], snr_values=[-24],
             trials=10, calibration_trials=100, validation_trials=100,
         )
+
+
+def test_mismatched_calibration_writes_results(tmp_path):
+    from iris_sim.mismatch import run_mismatched_calibration
+
+    rows = run_mismatched_calibration(
+        tmp_path / "mismatch", amplitudes=[0.0, 0.2], snr_values=[-24],
+        trials=50, calibration_trials=100, validation_trials=100, seed=17,
+    )
+    assert len(rows) == 2
+    assert (tmp_path / "mismatch" / "mismatched_calibration.csv").exists()
+    assert (tmp_path / "mismatch" / "false_alarm_after_environment_change.png").exists()
+    assert rows[0]["calibration_condition"] == "clean_AWGN_only"
