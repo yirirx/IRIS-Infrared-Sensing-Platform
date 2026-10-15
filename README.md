@@ -132,3 +132,8 @@ See [Robustness experiment protocol](docs/robustness_experiment_protocol.md) for
 ### Latest reproducible sweep
 
 The controlled ambient-interference sweep has completed. See the [initial results report](5_Simulations/interference_sweep/RESULTS_REPORT.md), [summary CSV](5_Simulations/interference_sweep/interference_sweep.csv), and [detection plot](5_Simulations/interference_sweep/detection_vs_interference.png). Results are simulation-only and include explicit model limitations.
+
+
+### Threshold-mismatch experiment
+
+A second experiment tests the practical case where detector thresholds are calibrated in clean AWGN and the environment later gains periodic interference. See [mismatch experiment code](9_Firmware_and_Software/python/iris_sim/mismatch.py). Its results are generated automatically alongside the calibrated-condition sweep when the robustness workflow runs.
