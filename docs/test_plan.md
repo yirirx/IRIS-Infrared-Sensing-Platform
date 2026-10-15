@@ -13,3 +13,7 @@
 | T-09 | Independent false-alarm validation | False-alarm rate is measured on noise samples not used to set thresholds |
 
 Run `pytest` from the repository root. Monte Carlo tests use reduced trial counts for speed; the documented baseline uses larger trial counts.
+
+| T-10 | Interference sweep outputs | Summary CSV and detection/false-alarm plots are created |
+| T-11 | Sweep input validation | Duplicate or non-finite interference amplitudes are rejected |
+| T-12 | Confidence interval reporting | Detection and false-alarm estimates include Wilson 95% intervals |
