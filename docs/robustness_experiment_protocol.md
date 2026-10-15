@@ -35,3 +35,10 @@ Before drawing a conclusion:
 
 ## Current status
 This document specifies the experiment and reporting rules. It does not assert a performance result. A conclusion should only be written after the sweep has been executed and its output reviewed.
+
+
+## Fixed-threshold environmental-change experiment
+
+A complementary scenario calibrates both detector thresholds under clean AWGN only, then holds those thresholds fixed while testing noise-only and signal-present records under increasing sinusoidal interference. This answers a different operational question than the primary sweep, which recalibrates each detector under each interference condition.
+
+The main outcome is the independent false-alarm rate after the environment changes. If it departs from the target, detection probabilities under that fixed threshold should not be compared as if the false-alarm operating point were unchanged. Outputs remain simulation-only, with arbitrary interference units and Wilson 95% intervals.
