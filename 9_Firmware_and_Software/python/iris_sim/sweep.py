@@ -65,7 +65,70 @@ def run_interference_sweep(output_dir, amplitudes=None, frequency_hz=1000.0,
         writer = csv.DictWriter(handle, fieldnames=list(summary[0].keys()))
         writer.writeheader()
         writer.writerows(summary)
+    _plot_sweep_summary(output_dir / "detection_vs_interference.png", summary)
+    _plot_false_alarm_summary(output_dir / "false_alarm_vs_interference.png", summary)
     return summary
+
+
+def _plot_sweep_summary(path, rows):
+    import matplotlib
+    matplotlib.use("Agg")
+    import matplotlib.pyplot as plt
+    amplitudes = sorted({row["ambient_amplitude"] for row in rows})
+    snrs = sorted({row["snr_db"] for row in rows})
+    fig, axis = plt.subplots(figsize=(10, 6))
+    for snr in snrs:
+        for key, label, marker in (
+            ("energy_detection_rate", "Energy", "o"),
+            ("matched_filter_detection_rate", "Matched filter", "s"),
+        ):
+            subset = sorted(
+                (row for row in rows if row["snr_db"] == snr),
+                key=lambda row: row["ambient_amplitude"],
+            )
+            axis.plot(
+                [row["ambient_amplitude"] for row in subset],
+                [row[key] for row in subset],
+                marker=marker,
+                label=f"{label}, SNR {snr:g} dB",
+            )
+    axis.set_xlabel("Sinusoidal interference amplitude (arbitrary units)")
+    axis.set_ylabel("Detection probability")
+    axis.set_ylim(-0.03, 1.03)
+    axis.set_title("Detection vs interference amplitude (simulation)")
+    axis.grid(True, alpha=0.3)
+    axis.legend(ncol=2, fontsize=8)
+    fig.tight_layout()
+    fig.savefig(path, dpi=160)
+    plt.close(fig)
+
+
+def _plot_false_alarm_summary(path, rows):
+    import matplotlib
+    matplotlib.use("Agg")
+    import matplotlib.pyplot as plt
+    amplitudes = sorted({row["ambient_amplitude"] for row in rows})
+    fig, axis = plt.subplots(figsize=(9, 5))
+    for key, label, marker in (
+        ("energy_false_alarm_rate_validation", "Energy detector", "o"),
+        ("matched_filter_false_alarm_rate_validation", "Matched filter", "s"),
+    ):
+        means = []
+        for amplitude in amplitudes:
+            values = [row[key] for row in rows if row["ambient_amplitude"] == amplitude]
+            means.append(sum(values) / len(values))
+        axis.plot(amplitudes, means, marker=marker, label=label)
+    target = rows[0]["target_false_alarm_rate"]
+    axis.axhline(target, linestyle="--", linewidth=1, label=f"Target {target:.1%}")
+    axis.set_xlabel("Sinusoidal interference amplitude (arbitrary units)")
+    axis.set_ylabel("Independently validated false-alarm rate")
+    axis.set_ylim(0, 1)
+    axis.set_title("False alarms vs interference amplitude (simulation)")
+    axis.grid(True, alpha=0.3)
+    axis.legend()
+    fig.tight_layout()
+    fig.savefig(path, dpi=160)
+    plt.close(fig)
 
 
 def main():
