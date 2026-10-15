@@ -69,5 +69,7 @@ def test_interference_sweep_writes_summary(tmp_path):
     )
     assert len(rows) == 4
     assert (tmp_path / "sweep" / "interference_sweep.csv").exists()
+    assert (tmp_path / "sweep" / "detection_vs_interference.png").exists()
+    assert (tmp_path / "sweep" / "false_alarm_vs_interference.png").exists()
     assert {row["ambient_amplitude"] for row in rows} == {0.0, 0.2}
     assert all(row["result_type"] == "simulation_not_measurement" for row in rows)
