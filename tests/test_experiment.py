@@ -58,3 +58,16 @@ def test_invalid_ambient_frequency_rejected(tmp_path):
     with pytest.raises(ValueError):
         run_experiment(tmp_path, trials=10, calibration_trials=100, validation_trials=100,
                        ambient_amplitude=0.1, ambient_frequency_hz=50000)
+
+def test_interference_sweep_writes_summary(tmp_path):
+    from iris_sim.sweep import run_interference_sweep
+
+    rows = run_interference_sweep(
+        tmp_path / "sweep", amplitudes=[0.0, 0.2], frequency_hz=1000,
+        snr_values=[-24, 0], trials=100, calibration_trials=100,
+        validation_trials=100, seed=11,
+    )
+    assert len(rows) == 4
+    assert (tmp_path / "sweep" / "interference_sweep.csv").exists()
+    assert {row["ambient_amplitude"] for row in rows} == {0.0, 0.2}
+    assert all(row["result_type"] == "simulation_not_measurement" for row in rows)
