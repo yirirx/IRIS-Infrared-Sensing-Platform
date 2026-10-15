@@ -86,10 +86,14 @@ def _plot_sweep_summary(path, rows):
                 (row for row in rows if row["snr_db"] == snr),
                 key=lambda row: row["ambient_amplitude"],
             )
-            axis.plot(
-                [row["ambient_amplitude"] for row in subset],
-                [row[key] for row in subset],
-                marker=marker,
+            x = [row["ambient_amplitude"] for row in subset]
+            y = [row[key] for row in subset]
+            low_key = "energy_ci95_low" if key == "energy_detection_rate" else "matched_filter_ci95_low"
+            high_key = "energy_ci95_high" if key == "energy_detection_rate" else "matched_filter_ci95_high"
+            lower = [max(0.0, value - row[low_key]) for value, row in zip(y, subset)]
+            upper = [max(0.0, row[high_key] - value) for value, row in zip(y, subset)]
+            axis.errorbar(
+                x, y, yerr=[lower, upper], marker=marker, capsize=3,
                 label=f"{label}, SNR {snr:g} dB",
             )
     axis.set_xlabel("Sinusoidal interference amplitude (arbitrary units)")
