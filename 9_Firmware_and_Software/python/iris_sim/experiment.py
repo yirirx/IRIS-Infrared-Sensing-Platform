@@ -175,12 +175,14 @@ def run_experiment(output_dir, seed=20261014, trials=1000, snr_values=None,
         (output_dir / "roc_curve.csv").write_text(
             "ROC not generated: roc_snr_db must be included in snr_values.\n", encoding="utf-8"
         )
-    _plot_waveform(output_dir / "waveform.png", time_s, reference, example_received)
+    _plot_waveform(output_dir / "waveform.png", time_s, reference, example_received,
+                   ambient_amplitude, ambient_frequency_hz)
     _plot_sweep(output_dir / "detection_sweep.png", rows)
     return rows
 
 
-def _plot_waveform(path, time_s, reference, received):
+def _plot_waveform(path, time_s, reference, received, ambient_amplitude=0.0,
+                   ambient_frequency_hz=0.0):
     import matplotlib
     matplotlib.use("Agg")
     import matplotlib.pyplot as plt
@@ -189,7 +191,10 @@ def _plot_waveform(path, time_s, reference, received):
     axes[0].set_title("Reference burst (simulation; arbitrary amplitude)")
     axes[0].set_ylabel("Amplitude (a.u.)")
     axes[1].plot(time_s * 1000, received, linewidth=0.8)
-    axes[1].set_title("Received burst with fixed-variance simulated AWGN")
+    channel_label = "AWGN"
+    if ambient_amplitude:
+        channel_label += f" + sinusoidal interference ({ambient_frequency_hz:g} Hz, amplitude {ambient_amplitude:g} a.u.)"
+    axes[1].set_title(f"Received burst with simulated {channel_label}")
     axes[1].set_xlabel("Time (ms)")
     axes[1].set_ylabel("Amplitude (a.u.)")
     for axis in axes:
@@ -216,7 +221,8 @@ def _plot_sweep(path, rows):
     axis.set_xlabel("SNR (dB; mean signal power / noise variance)")
     axis.set_ylabel("Detection probability")
     axis.set_ylim(-0.03, 1.03)
-    axis.set_title("Detection probability vs SNR — AWGN simulation")
+    channel = rows[0].get("noise_model", "simulation")
+    axis.set_title(f"Detection probability vs SNR — {channel}")
     axis.grid(True, alpha=0.3)
     axis.legend()
     fig.tight_layout()
