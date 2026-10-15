@@ -127,3 +127,8 @@ MIT; see [LICENSE](LICENSE).
 ## Research protocol
 
 See [Robustness experiment protocol](docs/robustness_experiment_protocol.md) for the hypothesis, controlled variables, statistical reporting, and limitations for the ambient-interference sweep.
+
+
+### Latest reproducible sweep
+
+The controlled ambient-interference sweep has completed. See the [initial results report](5_Simulations/interference_sweep/RESULTS_REPORT.md), [summary CSV](5_Simulations/interference_sweep/interference_sweep.csv), and [detection plot](5_Simulations/interference_sweep/detection_vs_interference.png). Results are simulation-only and include explicit model limitations.
