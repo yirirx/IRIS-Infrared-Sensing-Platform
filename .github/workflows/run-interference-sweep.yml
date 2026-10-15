@@ -6,6 +6,7 @@ on:
       - "9_Firmware_and_Software/python/iris_sim/experiment.py"
       - "9_Firmware_and_Software/python/iris_sim/sweep.py"
       - "9_Firmware_and_Software/python/iris_sim/mismatch.py"
+      - "9_Firmware_and_Software/python/iris_sim/seed_stability.py"
       - "9_Firmware_and_Software/python/iris_sim/signal_model.py"
       - "9_Firmware_and_Software/python/iris_sim/detectors.py"
       - "tests/**"
@@ -46,11 +47,18 @@ jobs:
             --calibration-trials 5000 \
             --validation-trials 5000 \
             --seed 20261020
+      - name: Run repeated-seed stability check
+        run: |
+          python -m iris_sim.seed_stability \\
+            --output 5_Simulations/seed_stability \\
+            --trials 1000 \\
+            --calibration-trials 5000 \\
+            --validation-trials 5000
       - name: Commit reproducible simulation outputs
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add 5_Simulations/interference_sweep 5_Simulations/mismatched_calibration
+          git add 5_Simulations/interference_sweep 5_Simulations/mismatched_calibration 5_Simulations/seed_stability
           if git diff --cached --quiet; then
             echo "Simulation outputs are unchanged."
           else
