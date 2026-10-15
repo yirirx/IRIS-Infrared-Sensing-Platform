@@ -27,12 +27,15 @@ Baseline: 1,000 signal-present trials per SNR; 5,000 noise-only records for thre
 - Independently validated false-alarm rates were 5.32% and 5.28%, respectively.
 - These depend on the idealized model, reference waveform, thresholds, and SNR convention. They are not hardware performance claims.
 
+Model note: [ambient-flicker interference assumptions and limitations](docs/ambient_interference_model.md).
+
 Raw data: [metrics.csv](5_Simulations/results/metrics.csv) · [downsampled ROC coordinates (21 display points)](5_Simulations/results/roc_curve.csv) · [experiment protocol](5_Simulations/experiment_plan.md) · [validation notes](docs/test_results.md). Re-running the CLI exports the full 101-point ROC sweep.
 
 ## Implemented
 - Deterministic on/off-keyed burst generation.
 - Fixed-variance AWGN channel model and explicit SNR convention.
 - Energy and matched-filter detector scores.
+- A standalone sinusoidal ambient-flicker interference utility for controlled stress tests (not yet integrated into the primary Monte Carlo experiment).
 - Independent noise-only threshold calibration and false-alarm validation.
 - Monte Carlo estimates with Wilson 95% confidence intervals.
 - Empirical ROC curve at a configurable SNR.
@@ -95,7 +98,9 @@ These are candidates, not a finalized bill of materials. Verify exact variants, 
 - [x] Independent threshold calibration and false-alarm validation.
 - [x] Wilson 95% intervals and empirical ROC export.
 - [ ] Compare Monte Carlo results with analytical predictions.
-- [ ] Add timing mismatch and ambient-light interference models.
+- [x] Add a standalone sinusoidal ambient-flicker interference utility with parameter validation.
+- [ ] Integrate interference into the Monte Carlo experiment and compare detector robustness under matched calibration conditions.
+- [ ] Add timing mismatch.
 - [ ] Select receiver architecture and design a reviewed circuit.
 - [ ] Build a safe low-power bench prototype and record raw measurements.
 - [ ] Validate the model against measurements.
