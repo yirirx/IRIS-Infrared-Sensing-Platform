@@ -122,3 +122,8 @@ IR may be invisible and still pose an eye hazard. Any future hardware work must 
 
 ## License
 MIT; see [LICENSE](LICENSE).
+
+
+## Research protocol
+
+See [Robustness experiment protocol](docs/robustness_experiment_protocol.md) for the hypothesis, controlled variables, statistical reporting, and limitations for the ambient-interference sweep.
