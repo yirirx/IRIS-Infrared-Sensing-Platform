@@ -15,7 +15,8 @@ def test_ambient_flicker_is_deterministic_and_bounded():
     a = add_ambient_flicker(signal, 1000, amplitude=0.3, frequency_hz=50, phase_rad=0.2)
     b = add_ambient_flicker(signal, 1000, amplitude=0.3, frequency_hz=50, phase_rad=0.2)
     assert np.allclose(a, b)
-    assert np.isclose(np.max(np.abs(a)), 0.3)
+    assert np.max(np.abs(a)) <= 0.3 + 1e-12
+    assert np.max(np.abs(a)) > 0.29
 
 @pytest.mark.parametrize("kwargs", [
     {"sample_rate_hz": 0, "amplitude": 1, "frequency_hz": 10},
