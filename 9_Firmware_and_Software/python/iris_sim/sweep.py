@@ -19,8 +19,11 @@ def run_interference_sweep(output_dir, amplitudes=None, frequency_hz=1000.0,
     output_dir.mkdir(parents=True, exist_ok=True)
     amplitudes = [0.0, 0.1, 0.2, 0.4, 0.8] if amplitudes is None else list(amplitudes)
     snr_values = [-30, -24, -18] if snr_values is None else list(snr_values)
-    if not amplitudes or any(a < 0 for a in amplitudes):
-        raise ValueError("amplitudes must be a non-empty list of non-negative values")
+    import math
+    if not amplitudes or any(not math.isfinite(a) or a < 0 for a in amplitudes):
+        raise ValueError("amplitudes must be a non-empty list of finite non-negative values")
+    if len(set(amplitudes)) != len(amplitudes):
+        raise ValueError("amplitudes must be unique to avoid overwriting run folders")
     if not snr_values:
         raise ValueError("snr_values must not be empty")
 
@@ -52,7 +55,11 @@ def run_interference_sweep(output_dir, amplitudes=None, frequency_hz=1000.0,
                 "matched_filter_ci95_low": row["matched_filter_ci95_low"],
                 "matched_filter_ci95_high": row["matched_filter_ci95_high"],
                 "energy_false_alarm_rate_validation": row["energy_false_alarm_rate_validation"],
+                "energy_false_alarm_ci95_low": row["energy_false_alarm_ci95_low"],
+                "energy_false_alarm_ci95_high": row["energy_false_alarm_ci95_high"],
                 "matched_filter_false_alarm_rate_validation": row["matched_filter_false_alarm_rate_validation"],
+                "matched_filter_false_alarm_ci95_low": row["matched_filter_false_alarm_ci95_low"],
+                "matched_filter_false_alarm_ci95_high": row["matched_filter_false_alarm_ci95_high"],
                 "target_false_alarm_rate": target_false_alarm,
                 "calibration_trials": calibration_trials,
                 "validation_trials": validation_trials,
@@ -113,15 +120,20 @@ def _plot_false_alarm_summary(path, rows):
     import matplotlib.pyplot as plt
     amplitudes = sorted({row["ambient_amplitude"] for row in rows})
     fig, axis = plt.subplots(figsize=(9, 5))
-    for key, label, marker in (
-        ("energy_false_alarm_rate_validation", "Energy detector", "o"),
-        ("matched_filter_false_alarm_rate_validation", "Matched filter", "s"),
+    for key, low_key, high_key, label, marker in (
+        ("energy_false_alarm_rate_validation", "energy_false_alarm_ci95_low",
+         "energy_false_alarm_ci95_high", "Energy detector", "o"),
+        ("matched_filter_false_alarm_rate_validation", "matched_filter_false_alarm_ci95_low",
+         "matched_filter_false_alarm_ci95_high", "Matched filter", "s"),
     ):
-        means = []
-        for amplitude in amplitudes:
-            values = [row[key] for row in rows if row["ambient_amplitude"] == amplitude]
-            means.append(sum(values) / len(values))
-        axis.plot(amplitudes, means, marker=marker, label=label)
+        # Validation is shared across SNR rows for each amplitude.
+        subset = [next(row for row in rows if row["ambient_amplitude"] == amplitude)
+                  for amplitude in amplitudes]
+        y = [row[key] for row in subset]
+        lower = [max(0.0, value - row[low_key]) for value, row in zip(y, subset)]
+        upper = [max(0.0, row[high_key] - value) for value, row in zip(y, subset)]
+        axis.errorbar(amplitudes, y, yerr=[lower, upper], marker=marker,
+                      capsize=3, label=label)
     target = rows[0]["target_false_alarm_rate"]
     axis.axhline(target, linestyle="--", linewidth=1, label=f"Target {target:.1%}")
     axis.set_xlabel("Sinusoidal interference amplitude (arbitrary units)")
