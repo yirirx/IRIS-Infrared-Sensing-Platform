@@ -42,3 +42,27 @@ This document specifies the experiment and reporting rules. It does not assert a
 A complementary scenario calibrates both detector thresholds under clean AWGN only, then holds those thresholds fixed while testing noise-only and signal-present records under increasing sinusoidal interference. This answers a different operational question than the primary sweep, which recalibrates each detector under each interference condition.
 
 The main outcome is the independent false-alarm rate after the environment changes. If it departs from the target, detection probabilities under that fixed threshold should not be compared as if the false-alarm operating point were unchanged. Outputs remain simulation-only, with arbitrary interference units and Wilson 95% intervals.
+
+
+## Frequency sensitivity study
+
+### Question
+With thresholds calibrated only under clean AWGN, how does a sinusoidal disturbance's frequency affect the noise-only false-alarm rate of the energy detector and matched filter?
+
+### Prespecified sweep
+- Interference frequencies: 250, 500, 1,000, 2,500, 5,000, and 10,000 Hz.
+- Disturbance amplitudes: 0.0, 0.2, and 0.4 arbitrary model units.
+- SNR values: -30, -24, and -18 dB for signal-present trials.
+- Threshold calibration: 5,000 clean noise-only trials per detector.
+- Noise-only validation: 5,000 trials per condition.
+- Signal-present trials: 1,000 per SNR and condition.
+- Base seed: 20261025; each frequency uses a deterministic offset seed.
+
+### Primary endpoint
+The primary endpoint is the noise-only validation false-alarm rate at each frequency and disturbance amplitude. Wilson 95% confidence intervals are retained in the CSV. Signal-present detection probability is secondary and must always be interpreted alongside false-alarm rate.
+
+### Interpretation guardrails
+- Frequency and amplitude are idealized simulation parameters, not calibrated ambient-light measurements.
+- This is a fixed-threshold mismatch experiment; the threshold is not re-estimated after adding interference.
+- A low false-alarm rate at these six frequencies does not prove immunity to other frequencies, phases, non-sinusoidal sources, clipping, or real sensor effects.
+- Results should be described as evidence about this model only. A physical claim requires a specified emitter/receiver, analogue front end, ADC configuration, optical path, and measured test data.
