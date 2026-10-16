@@ -56,7 +56,7 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add 5_Simulations/interference_sweep 5_Simulations/mismatched_calibration 5_Simulations/seed_stability
+          git add 5_Simulations/interference_sweep 5_Simulations/mismatched_calibration 5_Simulations/seed_stability 5_Simulations/frequency_sensitivity
           if git diff --cached --quiet; then
             echo "Simulation outputs are unchanged."
           else
