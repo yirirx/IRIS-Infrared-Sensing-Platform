@@ -152,3 +152,6 @@ The workflow also repeats the fixed-threshold experiment with five independent r
 ### Interference frequency sensitivity
 
 A new experiment sweeps six sinusoidal interference frequencies and compares false-alarm rates for the two detectors while thresholds remain calibrated on clean noise: [CSV results](5_Simulations/frequency_sensitivity/frequency_sensitivity.csv), [plot](5_Simulations/frequency_sensitivity/frequency_sensitivity.png). This is a simulation study; amplitude units are arbitrary and the result is not physical sensor validation.
+
+
+Frequency-study design and interpretation guardrails are documented in [the robustness experiment protocol](docs/robustness_experiment_protocol.md#frequency-sensitivity-study).
