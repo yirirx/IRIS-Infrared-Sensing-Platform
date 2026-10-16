@@ -112,3 +112,17 @@ def test_seed_stability_writes_summary(tmp_path):
     assert (tmp_path / "stability" / "seed_stability.csv").exists()
     assert (tmp_path / "stability" / "seed_stability.png").exists()
     assert all(row["seed_count"] == 2 for row in rows)
+
+
+def test_frequency_study_writes_summary(tmp_path):
+    from iris_sim.frequency_study import run_frequency_study
+
+    rows = run_frequency_study(
+        tmp_path / "frequency", frequencies_hz=[250.0, 1000.0],
+        amplitudes=[0.0, 0.2], snr_values=[-24], trials=30,
+        calibration_trials=100, validation_trials=100, seed=31,
+    )
+    assert len(rows) == 4
+    assert (tmp_path / "frequency" / "frequency_sensitivity.csv").exists()
+    assert (tmp_path / "frequency" / "frequency_sensitivity.png").exists()
+    assert all(row["result_type"] == "simulation_not_measurement" for row in rows)
