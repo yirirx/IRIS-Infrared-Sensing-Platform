@@ -109,7 +109,7 @@ These are candidates, not a finalized bill of materials. Verify exact variants, 
 - [x] Add a sinusoidal ambient-flicker model with parameter validation.
 - [x] Integrate optional interference into threshold calibration, independent false-alarm validation, and detection trials.
 - [x] Add a reproducible Monte Carlo sweep across multiple interference amplitudes with independent calibration and validation at each condition.
-- [ ] Analyze sweep outputs and add a concise interpretation of observed robustness trends.
+- [x] Analyze interference-sweep and frequency-sensitivity outputs; document observed robustness trends and model limitations.
 - [ ] Add timing mismatch.
 - [ ] Select receiver architecture and design a reviewed circuit.
 - [ ] Build a safe low-power bench prototype and record raw measurements.
@@ -155,3 +155,6 @@ A new experiment sweeps six sinusoidal interference frequencies and compares fal
 
 
 Frequency-study design and interpretation guardrails are documented in [the robustness experiment protocol](docs/robustness_experiment_protocol.md#frequency-sensitivity-study).
+
+
+Frequency sensitivity results and interpretation: [results report](5_Simulations/frequency_sensitivity/RESULTS_REPORT.md), [CSV](5_Simulations/frequency_sensitivity/frequency_sensitivity.csv), [plot](5_Simulations/frequency_sensitivity/frequency_sensitivity.png). The 5 kHz condition is a counterexample to any blanket claim that the matched filter is immune to interference.
