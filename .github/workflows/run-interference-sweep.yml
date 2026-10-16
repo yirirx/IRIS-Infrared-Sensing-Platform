@@ -7,6 +7,7 @@ on:
       - "9_Firmware_and_Software/python/iris_sim/sweep.py"
       - "9_Firmware_and_Software/python/iris_sim/mismatch.py"
       - "9_Firmware_and_Software/python/iris_sim/seed_stability.py"
+      - "9_Firmware_and_Software/python/iris_sim/frequency_study.py"
       - "9_Firmware_and_Software/python/iris_sim/signal_model.py"
       - "9_Firmware_and_Software/python/iris_sim/detectors.py"
       - "tests/**"
@@ -49,6 +50,8 @@ jobs:
             --seed 20261020
       - name: Run repeated-seed stability check
         run: python -m iris_sim.seed_stability --output 5_Simulations/seed_stability --trials 1000 --calibration-trials 5000 --validation-trials 5000
+      - name: Run interference frequency sensitivity study
+        run: python -m iris_sim.frequency_study --output 5_Simulations/frequency_sensitivity --trials 1000 --calibration-trials 5000 --validation-trials 5000
       - name: Commit reproducible simulation outputs
         run: |
           git config user.name "github-actions[bot]"
